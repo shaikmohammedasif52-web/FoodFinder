@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FoodFinder | Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+
+body{
+background:linear-gradient(135deg,#0f172a,#020617);
+color:white;
+min-height:100vh;
+}
+
+/* NAVBAR */
+.nav{
+margin:20px;
+padding:18px 35px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-radius:18px;
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(12px);
+border:1px solid rgba(255,255,255,0.08);
+}
+
+.logo{font-size:20px;font-weight:700;color:#ff7a00;}
+
+.nav-right{display:flex;align-items:center;gap:12px;}
+
+.nav a{
+display:inline-block;
+text-decoration:none;
+padding:10px 18px;
+border-radius:12px;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.12);
+color:#e2e8f0;
+font-weight:500;
+font-size:14px;
+transition: all 0.3s ease;
+cursor:pointer;
+}
+
+.nav a:hover{
+background:rgba(255,122,0,0.25);
+border-color:rgba(255,122,0,0.6);
+color:white;
+transform:translateY(-4px) scale(1.05);
+box-shadow:0 12px 25px rgba(255,122,0,0.4);
+}
+
+/* PROFILE */
+.profile{position:relative;}
+
+.profile-btn{
+display:inline-block;
+padding:10px 16px;
+border-radius:12px;
+background:rgba(255,122,0,0.15);
+border:1px solid rgba(255,122,0,0.35);
+color:#ffb067;
+cursor:pointer;
+font-weight:600;
+}
+
+.dropdown{
+position:absolute;
+right:0;
+top:45px;
+width:180px;
+background:rgba(15,23,42,0.95);
+border-radius:14px;
+display:none;
+}
+
+.dropdown a{
+display:block;
+padding:12px;
+color:white;
+text-decoration:none;
+}
+
+/* HERO */
+.hero{
+    padding:60px 40px 30px;
+    position: relative;
+    z-index: 5;
+}
+
+.hero h1{
+font-size:36px;
+background:linear-gradient(90deg,#ffffff,#ff7a00);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.hero p{color:#94a3b8;margin-top:10px;}
+
+/* ACTION BUTTONS */
+.actions{
+display:flex;
+gap:18px;
+margin-top:35px;
+flex-wrap:wrap;
+position: relative;
+z-index: 6;
+}
+
+.action-btn{
+padding:14px 22px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,0.08);
+background:rgba(255,255,255,0.05);
+color:white;
+cursor:pointer;
+}
+
+/* SECTION */
+.section{
+padding:20px 40px 70px;
+overflow:visible;   /* ✅ ADD THIS */
+}
+
+.cards{
+display:flex;
+gap:25px;
+flex-wrap:wrap;
+margin-top:20px;
+overflow:visible;   /* ✅ ADD THIS */
+}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:40px;color:#bbb;width:100%;}
+
+/* CARD */
+.card{
+width:300px;
+border-radius:22px;
+background:rgba(255,255,255,0.06);
+overflow:hidden;
+transition:all 0.35s ease;
+position:relative;   /* ✅ ADD */
+z-index:1;           /* ✅ ADD */
+}
+
+.card:hover{
+transform:translateY(-12px) scale(1.03);
+box-shadow:0 25px 50px rgba(255,122,0,0.35);
+z-index:2;
+}
+
+.card img{width:100%;height:180px;object-fit:cover;}
+.card-content{padding:18px;}
+.rating{color:#ffb067;margin-top:5px;}
+.tag{
+margin-top:10px;
+padding:6px 12px;
+border-radius:20px;
+background:rgba(255,122,0,0.15);
+color:#ff7a00;
+font-size:12px;
+}
+.view-btn{
+margin-top:10px;
+padding:8px 12px;
+border:none;
+background:#ff4d4d;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="nav">
+<div class="logo">🍽 FoodFinder AI</div>
+
+<div class="nav-right">
+<a href="/search">Search</a>
+<a href="/how-it-works">How It Works</a>
+
+<div class="profile">
+<div class="profile-btn" onclick="toggleMenu()">👤 My Account</div>
+
+<div class="dropdown" id="dropdown">
+<a href="/profile">Profile</a>
+<a href="/favorites">Favorites</a>
+<a href="/settings">⚙️ Settings</a>
+<a href="/logout">Logout</a>
+</div>
+</div>
+</div>
+</div>
+
+<div class="hero">
+    
+<h1>Discover Food Like Never Before</h1>
+<p>AI-powered restaurant discovery & personalized recommendations</p>
+
+<div class="actions">
+<button class="action-btn" onclick="window.location.href='/search'">🔍 Smart Search</button>
+<button class="action-btn" onclick="findNearby()">📍 Nearby Intelligence</button>
+<button class="action-btn" onclick="loadAIPicks()">⭐ AI Top Picks</button>
+<button class="action-btn" onclick="surpriseMe()">🎲 Surprise Me</button>
+</div>
+</div>
+
+<!-- 🤖 ML RECOMMENDATIONS -->
+<div class="section">
+<h3>🤖 AI Recommended for You</h3>
+
+<div class="cards">
+{% if recs %}
+{% for r in recs %}
+<div class="card"
+onclick="openDetails(
+'{{ r.name|escape }}',
+'{{ r.address|escape }}',
+'{{ r.rating }}',
+'{{ r.lat }}',
+'{{ r.lon }}',
+'{{ r.photo|escape }}',
+'{{ r.place_id }}'
+)">
+<img src="{{ r.photo if r.photo else 'https://via.placeholder.com/400x300?text=No+Image' }}">
+
+<div class="card-content">
+<h4>{{ r.name }}</h4>
+<div class="rating">⭐ AI Match</div>
+<div class="tag">ML Recommended</div>
+</div>
+
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+<p>No recommendations yet</p>
+</div>
+{% endif %}
+</div>
+</div>
+
+<div class="section">
+<h3 id="sectionTitle">🔥 Featured Restaurants</h3>
+
+<div id="restaurantContainer">
+
+<div class="cards">
+<div class="card">
+<img src="/static/images/rest1.jpg">
+<div class="card-content">
+<h4>Royal Dum Biryani</h4>
+<div class="rating">⭐ 4.5 • Biryani</div>
+<div class="tag">Best Seller</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+function toggleMenu(){
+const menu=document.getElementById("dropdown")
+menu.style.display = menu.style.display==="block" ? "none":"block"
+}
+
+window.addEventListener("click",function(e){
+const menu=document.getElementById("dropdown")
+const btn=document.querySelector(".profile-btn")
+if(!btn.contains(e.target) && !menu.contains(e.target)){
+menu.style.display="none"
+}
+})
+
+function findNearby(){
+if(navigator.geolocation){
+navigator.geolocation.getCurrentPosition(function(position){
+fetch("/nearby",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+latitude:position.coords.latitude,
+longitude:position.coords.longitude
+})
+})
+.then(()=>{window.location.href="/results_from_location"})
+})
+}else{
+alert("Geolocation not supported")
+}
+}
+
+function loadAIPicks(){
+const container=document.getElementById("restaurantContainer")
+const title=document.getElementById("sectionTitle")
+
+title.innerText="🤖 AI Recommended for You"
+container.innerHTML="Loading..."
+
+fetch("/api_ai_picks")
+.then(res=>res.json())
+.then(data=>{
+let allData = data.top_rated.concat(data.popular)
+
+container.innerHTML = `<div class="cards">${renderCards(allData)}</div>`
+})
+}
+
+function surpriseMe(){
+fetch("/api_surprise")
+.then(res=>res.json())
+.then(data=>{
+document.getElementById("restaurantContainer").innerHTML =
+`<div class="cards">${renderCards(data)}</div>`
+})
+}
+
+function openDetails(name,address,rating,lat,lon,photo,place_id){
+window.location.href =
+`/restaurant?name=${encodeURIComponent(name)}&address=${encodeURIComponent(address)}&rating=${rating}&lat=${lat}&lon=${lon}&photo=${encodeURIComponent(photo)}&place_id=${place_id}`
+}
+
+function renderCards(restaurants){
+return restaurants.map(r=>`
+<div class="card">
+<img src="${r.photo || 'https://via.placeholder.com/400x300?text=No+Image'}">
+<div class="card-content">
+<h4>${r.name}</h4>
+<div class="rating">⭐ ${r.rating}</div>
+<div class="tag">Recommended</div>
+
+<button class="view-btn"
+onclick="openDetails(
+'${r.name}',
+'${r.address}',
+'${r.rating}',
+'${r.lat}',
+'${r.lon}',
+'${r.photo}',
+'${r.place_id}'
+)">
+View Details
+</button>
+
+</div>
+</div>
+`).join("")
+}
+</script>
+
+</body>
+</html>

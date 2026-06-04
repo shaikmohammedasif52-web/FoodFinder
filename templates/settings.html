@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Settings | FoodFinder</title>
+
+<style>
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+margin:0;
+}
+
+.container{
+max-width:900px;
+margin:40px auto;
+padding:20px;
+}
+
+.section{
+background:rgba(255,255,255,0.05);
+padding:20px;
+margin-bottom:20px;
+border-radius:14px;
+}
+
+h2{
+margin-bottom:10px;
+color:#ff7a00;
+}
+
+label{
+display:block;
+margin-top:10px;
+}
+
+input, select{
+width:100%;
+padding:10px;
+margin-top:5px;
+border-radius:8px;
+border:none;
+}
+
+button{
+margin-top:15px;
+padding:10px 15px;
+background:#ff7a00;
+border:none;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+.toggle{
+margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>⚙️ Settings</h1>
+
+<!-- ACCOUNT -->
+<div class="section">
+<h2>👤 Account</h2>
+
+<form method="POST" action="/save_settings">
+<label>Name</label>
+<input type="text" name="name" value="{{ user.name if user else '' }}">
+
+<label>Phone</label>
+<input type="text" name="phone" value="{{ user.phone if user else '' }}">
+
+<button type="submit">Save Account</button>
+</form>
+</div>
+
+<!-- FOOD PREFERENCES -->
+<div class="section">
+<h2>❤️ Food Preferences</h2>
+
+<form method="POST" action="/save_preferences">
+<label>Food Type</label>
+<select name="food_type">
+<option>Veg</option>
+<option>Non-Veg</option>
+<option>Both</option>
+</select>
+
+<label>Favorite Cuisine</label>
+<select name="cuisine">
+<option>Indian</option>
+<option>Chinese</option>
+<option>Italian</option>
+<option>Any</option>
+</select>
+
+<label>Budget</label>
+<select name="budget">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+
+<button type="submit">Save Preferences</button>
+</form>
+</div>
+
+<!-- LOCATION -->
+<div class="section">
+<h2>📍 Location Settings</h2>
+
+<form method="POST" action="/save_location">
+<label>Default City</label>
+<input type="text" name="city">
+
+<label class="toggle">
+<input type="checkbox" name="auto_location"> Use Current Location
+</label>
+
+<button type="submit">Save Location</button>
+</form>
+</div>
+
+<!-- AI SETTINGS -->
+<div class="section">
+<h2>🤖 AI Personalization</h2>
+
+<form method="POST" action="/save_ai">
+<label class="toggle">
+<input type="checkbox" name="ai_enabled"> Improve recommendations using my activity
+</label>
+
+<button type="submit">Save AI Settings</button>
+</form>
+</div>
+
+<!-- THEME -->
+<div class="section">
+<h2>🎨 Appearance</h2>
+
+<form method="POST" action="/save_theme">
+<select name="theme">
+<option>Dark</option>
+<option>Light</option>
+</select>
+
+<button type="submit">Save Theme</button>
+</form>
+</div>
+
+<!-- FAVORITES -->
+<div class="section">
+<h2>❤️ Favorites</h2>
+
+<a href="/favorites">
+<button>View Favorites</button>
+</a>
+
+<form method="POST" action="/clear_favorites">
+<button>Clear All Favorites</button>
+</form>
+</div>
+
+<!-- INFO -->
+<div class="section">
+<h2>📊 App Info</h2>
+<p>FoodFinder AI v1.0</p>
+<p>Developed by You 😎</p>
+</div>
+
+</div>
+<select id="themeSelect">
+  <option value="dark">Dark</option>
+  <option value="light">Light</option>
+</select>
+<script>
+const themeSelect = document.getElementById("themeSelect");
+
+// Load saved theme
+const savedTheme = localStorage.getItem("theme") || "dark";
+document.body.className = savedTheme;
+themeSelect.value = savedTheme;
+
+// On change
+themeSelect.addEventListener("change", function() {
+    const theme = this.value;
+
+    document.body.className = theme;
+    localStorage.setItem("theme", theme);
+});
+</script>
+
+</body>
+</html>

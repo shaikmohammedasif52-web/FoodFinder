@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FoodFinder | Intelligent Cuisine Recommendation</title>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f7f7f7;
+color:#333;
+}
+
+/* NAVBAR */
+
+nav{
+background:#ff4d4d;
+padding:15px 40px;
+color:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+nav ul{
+list-style:none;
+display:flex;
+gap:20px;
+}
+
+nav ul li a{
+color:white;
+text-decoration:none;
+font-weight:500;
+}
+
+/* HERO FIXED */
+
+.hero{
+min-height:100vh;   /* 🔥 FIXED */
+background:
+linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)),
+url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5") center/cover;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:80px 20px;   /* 🔥 EXTRA SPACE */
+color:white;
+}
+
+.hero h1{
+font-size:2.8rem;
+margin-bottom:10px;
+}
+
+.hero p{
+margin-bottom:30px;
+}
+
+/* SEARCH BOX FIX */
+
+.search-box{
+background:white;
+padding:30px;
+border-radius:12px;
+max-width:500px;
+width:100%;
+margin-top:20px;
+margin-bottom:40px;   /* 🔥 FIX */
+box-shadow:0 15px 40px rgba(0,0,0,0.2);
+color:#333;
+text-align:left;
+}
+
+.search-box label{
+font-size:0.9rem;
+font-weight:600;
+margin-top:12px;
+display:block;
+}
+
+.helper{
+font-size:0.75rem;
+color:#777;
+margin-top:3px;
+}
+
+.search-box input,
+.search-box select,
+.search-box button{
+width:100%;
+padding:12px;
+margin-top:8px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+.search-box button{
+background:#ff4d4d;
+color:white;
+border:none;
+cursor:pointer;
+margin-top:20px;
+font-weight:600;
+}
+
+.search-box button:hover{
+background:#e33d3d;
+}
+
+.location-btn{
+background:#444 !important;
+}
+
+.location-btn:hover{
+background:#222 !important;
+}
+
+/* INFO SECTION FIX */
+
+.info{
+padding:60px 40px;
+background:white;
+text-align:center;
+margin-top:40px;   /* 🔥 FIX */
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+margin-top:30px;
+}
+
+.card{
+background:#f9f9f9;
+padding:25px;
+border-radius:10px;
+box-shadow:0 8px 20px rgba(0,0,0,0.1);
+}
+
+.card h3{
+color:#ff4d4d;
+margin-bottom:10px;
+}
+
+/* FOOTER */
+
+footer{
+background:#222;
+color:#aaa;
+padding:20px;
+text-align:center;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+.hero h1{
+font-size:2rem;
+}
+.search-box{
+padding:20px;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+<h2>🍽 FoodFinder</h2>
+<ul>
+<li><a href="/home">Home</a></li>
+<li><a href="/how-it-works">How it Works</a></li>
+<li><a href="/">Logout</a></li>
+</ul>
+</nav>
+
+<section class="hero">
+
+<h1>Discover Authentic Local Food</h1>
+<p>AI-powered restaurant & cuisine recommendations near you</p>
+
+<div class="search-box">
+
+<form action="/recommend" method="post" onsubmit="return validateLocation()">
+
+<label>📍 Location</label>
+<div class="helper">Enter your city, town, or village name</div>
+
+<input type="text" id="location" name="location" placeholder="Example: Eluru / Hyderabad / Vijayawada">
+<input type="hidden" id="lat" name="lat">
+<input type="hidden" id="lon" name="lon">
+
+<button type="button" onclick="getLocation()" class="location-btn">
+📍 Use My Current Location
+</button>
+
+<label>🍛 Preferred Cuisine</label>
+<select name="cuisine" required>
+<option value="Andhra">Andhra</option>
+<option value="North Indian">North Indian</option>
+<option value="South Indian">South Indian</option>
+<option value="Chinese">Chinese</option>
+</select>
+
+<label>💰 Budget</label>
+<select name="budget" required>
+<option value="Low">Low</option>
+<option value="Medium">Medium</option>
+<option value="High">High</option>
+</select>
+
+<label>🥗 Food Type</label>
+<select name="food_type" required>
+<option value="Veg">Veg</option>
+<option value="Non-Veg">Non-Veg</option>
+</select>
+
+<label>⭐ Minimum Rating</label>
+<select name="min_rating">
+<option value="0">All</option>
+<option value="3">3+ ⭐</option>
+<option value="4">4+ ⭐</option>
+<option value="4.5">4.5+ ⭐</option>
+</select>
+
+<button type="submit">Get Recommendations</button>
+
+</form>
+
+</div>
+
+</section>
+
+<section class="info">
+
+<h2>Why Choose FoodFinder?</h2>
+
+<div class="cards">
+
+<div class="card">
+<h3>🤖 AI Powered</h3>
+<p>Machine learning based personalized recommendations</p>
+</div>
+
+<div class="card">
+<h3>📍 Location Aware</h3>
+<p>Supports villages, towns, and cities</p>
+</div>
+
+<div class="card">
+<h3>✅ Trusted</h3>
+<p>Reduces fake and biased reviews</p>
+</div>
+
+</div>
+
+</section>
+
+<footer>
+Mini Project | WEB + AI + ML
+</footer>
+
+<script>
+
+function validateLocation(){
+let location=document.getElementById("location").value.trim()
+if(location===""){
+alert("Please enter a location or use current location")
+return false
+}
+return true
+}
+
+function getLocation(){
+if(navigator.geolocation){
+navigator.geolocation.getCurrentPosition(sendLocation, showError)
+}else{
+alert("Geolocation not supported")
+}
+}
+
+function sendLocation(position){
+
+const lat = position.coords.latitude
+const lon = position.coords.longitude
+
+fetch("/nearby",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+latitude:lat,
+longitude:lon
+})
+})
+.then(response=>response.json())
+.then(data=>{
+if(data.status==="success"){
+window.location.href="/results_from_location"
+}else{
+alert("Failed to fetch restaurants")
+}
+})
+.catch(()=>{
+alert("Server error")
+})
+}
+
+function showError(){
+alert("Please allow location access")
+}
+
+</script>
+<script>
+function initAutocomplete() {
+    window.onload = initAutocomplete;
+    const input = document.getElementById("location");
+
+    if (!input) return;
+
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ["(cities)"],
+        componentRestrictions: { country: "in" }
+    });
+
+    autocomplete.addListener("place_changed", function () {
+        const place = autocomplete.getPlace();
+        console.log("Selected:", place.formatted_address);
+    });
+}
+</script>
+
+</body>
+</html>

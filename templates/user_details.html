@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Details</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f5f5f5;
+}
+
+.container{
+width:420px;
+margin:80px auto;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+input{
+width:90%;
+padding:10px;
+margin:10px 0;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+padding:10px 20px;
+background:#ff4d4d;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#e63e3e;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Complete Your Profile</h2>
+
+<form action="/save_details" method="POST">
+
+<input type="text" name="first_name" placeholder="First Name" required>
+
+<input type="text" name="last_name" placeholder="Last Name" required>
+
+<input type="number" name="age" min="18" max="80" placeholder="Age (18-80)" required>
+
+<input type="tel" name="phone" pattern="[0-9]{10}" placeholder="Phone Number" required>
+
+<br><br>
+
+<button type="submit">Save Details</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

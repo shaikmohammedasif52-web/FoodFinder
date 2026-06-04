@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Recommendations | FoodFinder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#f5f5f5;
+color:#333;
+}
+
+nav{
+background:#ff4d4d;
+padding:15px 40px;
+color:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+margin-left:20px;
+}
+
+.container{
+max-width:1000px;
+margin:40px auto;
+padding:20px;
+}
+
+.summary-card{
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+margin-bottom:25px;
+}
+
+.summary-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+margin-top:15px;
+}
+
+.summary-grid div{
+background:#fafafa;
+padding:12px;
+border-radius:8px;
+border:1px solid #eee;
+}
+
+.restaurant-card{
+background:white;
+border-radius:16px;
+overflow:hidden;
+box-shadow:0 15px 40px rgba(0,0,0,0.1);
+margin-bottom:22px;
+transition:.3s;
+position:relative;
+}
+
+.restaurant-card:hover{
+transform:translateY(-4px);
+}
+
+.restaurant-img{
+width:100%;
+height:220px;
+object-fit:cover;
+}
+
+.restaurant-body{
+padding:18px;
+}
+
+.meta{
+font-size:.9rem;
+color:#777;
+margin-top:6px;
+}
+
+.rating{
+margin-top:6px;
+font-weight:600;
+color:#ff9800;
+}
+
+.save-btn{
+position:absolute;
+top:10px;
+right:10px;
+background:white;
+border:none;
+border-radius:50%;
+padding:8px;
+cursor:pointer;
+font-size:18px;
+box-shadow:0 2px 10px rgba(0,0,0,0.2);
+}
+
+.details-btn{
+display:inline-block;
+margin-top:10px;
+padding:8px 14px;
+background:#333;
+color:white;
+border-radius:6px;
+text-decoration:none;
+font-size:0.85rem;
+}
+
+.back-btn{
+display:inline-block;
+margin-top:20px;
+padding:12px 22px;
+background:#ff4d4d;
+color:white;
+border-radius:8px;
+text-decoration:none;
+}
+
+.no-results{
+background:white;
+padding:20px;
+border-radius:12px;
+text-align:center;
+box-shadow:0 10px 20px rgba(0,0,0,0.08);
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+<h2>🍽 FoodFinder</h2>
+<div>
+<a href="/home">Home</a>
+<a href="/favorites">❤️ Favorites</a>
+<a href="/">Logout</a>
+</div>
+</nav>
+
+<div class="container">
+
+<div id="map" style="height:400px; margin-bottom:25px; border-radius:10px;"></div>
+
+<div class="summary-card">
+<h3>🔍 Your Preferences</h3>
+
+<div class="summary-grid">
+<div><b>Location</b><br>{{ location if location else "Current Location" }}</div>
+<div><b>Cuisine</b><br>{{ cuisine if cuisine else "-" }}</div>
+<div><b>Budget</b><br>{{ budget if budget else "-" }}</div>
+<div><b>Food Type</b><br>{{ food_type if food_type else "-" }}</div>
+</div>
+
+</div>
+
+{% if restaurants and restaurants|length > 0 %}
+
+{% for r in restaurants %}
+
+<div class="restaurant-card">
+
+<!-- ✅ FIX: HEART / REMOVE BUTTON -->
+{% if location == "Favorites" %}
+<button class="save-btn" onclick='removeFavorite({{ r | tojson }})'>❌</button>
+{% else %}
+<button class="save-btn" onclick='saveFavorite({{ r | tojson }})'>❤️</button>
+{% endif %}
+
+{% if r.photo %}
+<img class="restaurant-img" src="{{ r.photo }}">
+{% else %}
+<img class="restaurant-img" src="https://via.placeholder.com/400x300?text=No+Image">
+{% endif %}
+
+<div class="restaurant-body">
+
+<h3>{{ r.name if r.name else "Restaurant" }}</h3>
+
+<div class="rating">
+    ⭐ {{ r.clean_rating if r.clean_rating else r.rating if r.rating else "N/A" }}
+    <small style="color: orange;">(AI Verified)</small>
+</div>
+
+<div class="meta">
+📍 {{ r.address if r.address else "Location not available" }}
+</div>
+
+<a class="details-btn"
+href="/restaurant?name={{ r.name | urlencode }}&address={{ r.address | urlencode }}&rating={{ r.rating }}&lat={{ r.lat }}&lon={{ r.lon }}&photo={{ r.photo | urlencode }}&place_id={{ r.place_id }}">
+View Details
+</a>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<div class="no-results">
+<h3>No restaurants found for this location.</h3>
+<p>Please try another search.</p>
+</div>
+
+{% endif %}
+
+<a href="/home" class="back-btn">⬅ Back to Home</a>
+
+</div>
+
+<script>
+function initMap(){
+
+    const restaurants = {{ restaurants | tojson }};
+
+    if(!restaurants || restaurants.length === 0) return;
+
+    const center = {
+        lat: restaurants[0].lat || 17.3850,
+        lng: restaurants[0].lon || 78.4867
+    };
+
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 13,
+        center: center
+    });
+
+    restaurants.forEach(r => {
+        if(r.lat && r.lon){
+            new google.maps.Marker({
+                position: {lat: r.lat, lng: r.lon},
+                map: map,
+                title: r.name
+            });
+        }
+    });
+}
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAA9513gmfOsnqi6PtnmF2ytGKR90CSkU&callback=initMap&libraries=places" async defer></script>
+
+<script>
+function saveFavorite(restaurant){
+    fetch("/save_favorite", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(restaurant)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === "saved"){
+            alert("Saved to Favorites ❤️");
+        }
+    });
+}
+
+function removeFavorite(restaurant){
+    fetch("/remove_favorite", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(restaurant)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === "removed"){
+            alert("Removed from Favorites ❌");
+            location.reload();
+        }
+    });
+}
+</script>
+
+</body>
+</html>

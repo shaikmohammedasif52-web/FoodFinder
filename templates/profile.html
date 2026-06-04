@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Profile</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+
+background:linear-gradient(
+270deg,
+#ff7a00,
+#ff3cac,
+#784ba0,
+#2b86c5,
+#42e695
+);
+
+background-size:1000% 1000%;
+animation:bgMove 18s ease infinite;
+overflow:hidden;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.blob{
+position:absolute;
+width:400px;
+height:400px;
+border-radius:50%;
+filter:blur(120px);
+opacity:0.6;
+animation:moveBlob 10s infinite alternate ease-in-out;
+}
+
+.blob1{ background:#ff7a00; top:-120px; left:-120px; }
+.blob2{ background:#ff3cac; bottom:-120px; right:-120px; animation-delay:4s; }
+.blob3{ background:#42e695; top:40%; left:70%; animation-delay:7s; }
+
+@keyframes moveBlob{
+0%{transform:translate(0,0)}
+100%{transform:translate(120px,-80px)}
+}
+
+.card{
+width:420px;
+padding:40px;
+background:rgba(255,255,255,0.2);
+backdrop-filter:blur(18px);
+border-radius:22px;
+border:1px solid rgba(255,255,255,0.3);
+box-shadow:0 25px 70px rgba(0,0,0,0.35);
+text-align:center;
+position:relative;
+z-index:10;
+}
+
+h2{
+font-size:28px;
+margin-bottom:20px;
+color:white;
+}
+
+.info{
+color:white;
+font-size:17px;
+margin:10px 0;
+}
+
+.label{
+font-weight:bold;
+color:#ffe082;
+}
+
+.btn{
+margin-top:25px;
+padding:12px 25px;
+border:none;
+background:linear-gradient(135deg,#ff7a00,#ff3cac);
+color:white;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+transition:0.3s;
+}
+
+.btn:hover{
+transform:translateY(-3px);
+box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div class="card">
+
+<h2>👤 User Profile</h2>
+
+{% if user %}
+
+<div class="info"><span class="label">Email:</span> {{ user.email }}</div>
+<div class="info"><span class="label">First Name:</span> {{ user.first_name }}</div>
+<div class="info"><span class="label">Last Name:</span> {{ user.last_name }}</div>
+<div class="info"><span class="label">Age:</span> {{ user.age }}</div>
+<div class="info"><span class="label">Phone:</span> {{ user.phone }}</div>
+
+{% else %}
+
+<div class="info">⚠️ No profile data found.</div>
+<div class="info">Please fill your details first.</div>
+
+{% endif %}
+
+<button class="btn" onclick="window.location.href='/home'">
+Back to Home
+</button>
+
+</div>
+
+</body>
+</html>
