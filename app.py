@@ -50,7 +50,7 @@ def init_db():
         photo TEXT
     )
     """)
-
+ 
     conn.commit()
     conn.close()
 
@@ -66,7 +66,7 @@ def is_fake_review(text):
 
     # repeated words
     if text.count("good") > 2:
-        return True
+        return True 
 
     # spammy text
     if "best best best" in text:
@@ -102,14 +102,22 @@ def send_email_otp(receiver_email, otp):
         msg["From"] = EMAIL_ADDRESS
         msg["To"] = receiver_email
 
-        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server = smtplib.SMTP("smtp.gmail.com", 587, timeout=10)
         server.starttls()
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        server.sendmail(EMAIL_ADDRESS, receiver_email, msg.as_string())
+
+        server.sendmail(
+            EMAIL_ADDRESS,
+            receiver_email,
+            msg.as_string()
+        )
+
         server.quit()
 
+        print("EMAIL SENT SUCCESSFULLY")
+
     except Exception as e:
-        print("EMAIL ERROR:", e)
+        print("EMAIL ERROR:", str(e))
 
 
 @app.route("/get_otp", methods=["POST"])
@@ -118,7 +126,10 @@ def get_otp():
     email = data.get("email")
 
     if not email:
-        return jsonify({"status": "error", "message": "Email required"})
+        return jsonify({
+            "status": "error",
+            "message": "Email required"
+        })
 
     otp = str(random.randint(100000, 999999))
 
@@ -128,9 +139,22 @@ def get_otp():
 
     print("OTP GENERATED:", otp)
 
-    send_email_otp(email, otp)
+    try:
+        send_email_otp(email, otp)
 
-    return jsonify({"status": "sent"})
+        return jsonify({
+            "status": "sent",
+            "otp": otp
+        })
+
+    except Exception as e:
+        print("OTP ERROR:", str(e))
+
+        return jsonify({
+            "status": "error",
+            "message": str(e),
+            "otp": otp
+        })
 
 @app.route("/verify_otp", methods=["POST"])
 def verify_otp():
@@ -256,14 +280,7 @@ def save_details():
     cursor = conn.cursor()
 
     # create table if not exists
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        email TEXT UNIQUE,
-        phone TEXT
-    )
-    """)
+
 
     # insert user
     cursor.execute("""
