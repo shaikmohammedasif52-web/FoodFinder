@@ -5,6 +5,10 @@ import time
 import requests
 from email.mime.text import MIMEText
 import sqlite3
+import os
+import resend
+
+resend.api_key = os.environ.get("RESEND_API_KEY")
 
 selected_cuisine = "Any"
 selected_budget = "Any"
@@ -97,22 +101,12 @@ def get_clean_rating(reviews):
 
 def send_email_otp(receiver_email, otp):
     try:
-        msg = MIMEText(f"Your OTP is {otp}")
-        msg["Subject"] = "FoodFinder OTP"
-        msg["From"] = EMAIL_ADDRESS
-        msg["To"] = receiver_email
-
-        server = smtplib.SMTP("smtp.gmail.com", 587, timeout=10)
-        server.starttls()
-        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-
-        server.sendmail(
-            EMAIL_ADDRESS,
-            receiver_email,
-            msg.as_string()
-        )
-
-        server.quit()
+        resend.Emails.send({
+            "from": "onboarding@resend.dev",
+            "to": receiver_email,
+            "subject": "FoodFinder OTP",
+            "html": f"<h2>Your OTP is: {otp}</h2>"
+        })
 
         print("EMAIL SENT SUCCESSFULLY")
 
