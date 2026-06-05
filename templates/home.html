@@ -77,6 +77,8 @@ width:180px;
 background:rgba(15,23,42,0.95);
 border-radius:14px;
 display:none;
+z-index:9999;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
 }
 
 .dropdown a{
@@ -84,6 +86,11 @@ display:block;
 padding:12px;
 color:white;
 text-decoration:none;
+transition:0.3s;
+}
+
+.dropdown a:hover{
+background:rgba(255,122,0,0.2);
 }
 
 /* HERO */
@@ -188,9 +195,11 @@ cursor:pointer;
 <a href="/how-it-works">How It Works</a>
 
 <div class="profile">
-<div class="profile-btn" onclick="toggleMenu()">👤 My Account</div>
+<button class="profile-btn" onclick="toggleMenu(event)">
+👤 My Account
+</button>
 
-<div class="dropdown" id="dropdown">
+<div class="dropdown" id="dropdown" onclick="event.stopPropagation()">
 <a href="/profile">Profile</a>
 <a href="/favorites">Favorites</a>
 <a href="/settings">⚙️ Settings</a>
@@ -268,18 +277,26 @@ onclick="openDetails(
 </div>
 
 <script>
-function toggleMenu(){
-const menu=document.getElementById("dropdown")
-menu.style.display = menu.style.display==="block" ? "none":"block"
+function toggleMenu(event){
+    event.stopPropagation();
+
+    const menu = document.getElementById("dropdown");
+
+    if(menu.style.display === "block"){
+        menu.style.display = "none";
+    }else{
+        menu.style.display = "block";
+    }
 }
 
-window.addEventListener("click",function(e){
-const menu=document.getElementById("dropdown")
-const btn=document.querySelector(".profile-btn")
-if(!btn.contains(e.target) && !menu.contains(e.target)){
-menu.style.display="none"
-}
-})
+document.addEventListener("click", function(event) {
+    const menu = document.getElementById("dropdown");
+    const profile = document.querySelector(".profile");
+
+    if (!profile.contains(event.target)) {
+        menu.style.display = "none";
+    }
+});
 
 function findNearby(){
 if(navigator.geolocation){
