@@ -56,7 +56,11 @@ box-shadow:0 12px 25px rgba(255,122,0,0.4);
 }
 
 /* PROFILE */
-.profile{position:relative;}
+/* PROFILE */
+.profile{
+    position:relative;
+    z-index:10000;
+}
 
 .profile-btn{
 display:inline-block;
@@ -77,8 +81,9 @@ width:180px;
 background:rgba(15,23,42,0.95);
 border-radius:14px;
 display:none;
-z-index:9999;
+z-index:10001;
 box-shadow:0 10px 30px rgba(0,0,0,0.4);
+pointer-events:auto;
 }
 
 .dropdown a{
@@ -91,6 +96,10 @@ transition:0.3s;
 
 .dropdown a:hover{
 background:rgba(255,122,0,0.2);
+}
+
+.profile:hover .dropdown{
+    display:block;
 }
 
 /* HERO */
@@ -195,9 +204,9 @@ cursor:pointer;
 <a href="/how-it-works">How It Works</a>
 
 <div class="profile">
-<button class="profile-btn" onclick="toggleMenu(event)">
+<div class="profile-btn">
 👤 My Account
-</button>
+</div>
 
 <div class="dropdown" id="dropdown" onclick="event.stopPropagation()">
 <a href="/profile">Profile</a>
@@ -277,26 +286,6 @@ onclick="openDetails(
 </div>
 
 <script>
-function toggleMenu(event){
-    event.stopPropagation();
-
-    const menu = document.getElementById("dropdown");
-
-    if(menu.style.display === "block"){
-        menu.style.display = "none";
-    }else{
-        menu.style.display = "block";
-    }
-}
-
-document.addEventListener("click", function(event) {
-    const menu = document.getElementById("dropdown");
-    const profile = document.querySelector(".profile");
-
-    if (!profile.contains(event.target)) {
-        menu.style.display = "none";
-    }
-});
 
 function findNearby(){
 if(navigator.geolocation){
