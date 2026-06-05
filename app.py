@@ -140,7 +140,7 @@ def get_otp():
     print("OTP GENERATED:", otp)
 
     try:
-        send_email_otp(email, otp)
+        #send_email_otp(email, otp)
 
         return jsonify({
             "status": "sent",
