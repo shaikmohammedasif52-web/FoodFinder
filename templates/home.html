@@ -60,6 +60,7 @@ box-shadow:0 12px 25px rgba(255,122,0,0.4);
 .profile{
     position:relative;
     z-index:10000;
+    display:inline-block;
 }
 
 .profile-btn{
@@ -76,7 +77,8 @@ font-weight:600;
 .dropdown{
 position:absolute;
 right:0;
-top:45px;
+top:100%;       /* changed */
+margin-top:0;   /* changed */
 width:180px;
 background:rgba(15,23,42,0.95);
 border-radius:14px;
@@ -102,6 +104,11 @@ background:rgba(255,122,0,0.2);
 }
 
 .profile:hover .dropdown{
+    display:block;
+}
+
+.profile:hover .dropdown,
+.dropdown:hover{
     display:block;
 }
 
