@@ -86,15 +86,18 @@ box-shadow:0 10px 30px rgba(0,0,0,0.4);
 pointer-events:auto;
 }
 
-.dropdown a{
-display:block;
+.dropdown button{
+width:100%;
 padding:12px;
+border:none;
+background:none;
 color:white;
-text-decoration:none;
-transition:0.3s;
+text-align:left;
+cursor:pointer;
+font-size:14px;
 }
 
-.dropdown a:hover{
+.dropdown button:hover{
 background:rgba(255,122,0,0.2);
 }
 
@@ -208,11 +211,24 @@ cursor:pointer;
 👤 My Account
 </div>
 
-<div class="dropdown" id="dropdown" onclick="event.stopPropagation()">
-<a href="/profile">Profile</a>
-<a href="/favorites">Favorites</a>
-<a href="/settings">⚙️ Settings</a>
-<a href="/logout">Logout</a>
+<div class="dropdown" id="dropdown">
+
+<button onclick="window.location.href='/profile'">
+Profile
+</button>
+
+<button onclick="window.location.href='/favorites'">
+Favorites
+</button>
+
+<button onclick="window.location.href='/settings'">
+⚙️ Settings
+</button>
+
+<button onclick="window.location.href='/logout'">
+Logout
+</button>
+
 </div>
 </div>
 </div>
