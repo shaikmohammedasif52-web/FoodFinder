@@ -99,19 +99,40 @@ def get_clean_rating(reviews):
 
 # ================= OTP =================
 
+import os
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+
+
 def send_email_otp(receiver_email, otp):
     try:
-        resend.Emails.send({
-            "from": "onboarding@resend.dev",
-            "to": receiver_email,
-            "subject": "FoodFinder OTP",
-            "html": f"<h2>Your OTP is: {otp}</h2>"
-        })
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = os.environ.get("BREVO_SMTP_KEY")
+
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+
+        sender_email = os.environ.get("BREVO_EMAIL")
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": receiver_email}],
+            sender={"email": sender_email, "name": "FoodFinder"},
+            subject="FoodFinder OTP",
+            html_content=f"""
+            <h2>FoodFinder Login OTP</h2>
+            <p>Your OTP is:</p>
+            <h1>{otp}</h1>
+            <p>This OTP expires in 60 seconds.</p>
+            """
+        )
+
+        api_instance.send_transac_email(send_smtp_email)
 
         print("EMAIL SENT SUCCESSFULLY")
 
-    except Exception as e:
-        print("EMAIL ERROR:", str(e))
+    except ApiException as e:
+        print("EMAIL ERROR:", e)
 
 
 @app.route("/get_otp", methods=["POST"])
