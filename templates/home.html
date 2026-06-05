@@ -77,15 +77,13 @@ font-weight:600;
 .dropdown{
 position:absolute;
 right:0;
-top:100%;       /* changed */
-margin-top:0;   /* changed */
+top:38px;          /* important */
 width:180px;
-background:rgba(15,23,42,0.95);
+background:rgba(15,23,42,0.98);
 border-radius:14px;
 display:none;
-z-index:10001;
+z-index:99999;
 box-shadow:0 10px 30px rgba(0,0,0,0.4);
-pointer-events:auto;
 }
 
 .dropdown button{
@@ -103,14 +101,6 @@ font-size:14px;
 background:rgba(255,122,0,0.2);
 }
 
-.profile:hover .dropdown{
-    display:block;
-}
-
-.profile:hover .dropdown,
-.dropdown:hover{
-    display:block;
-}
 
 /* HERO */
 .hero{
@@ -214,28 +204,15 @@ cursor:pointer;
 <a href="/how-it-works">How It Works</a>
 
 <div class="profile">
-<div class="profile-btn">
+<div class="profile-btn" onclick="toggleDropdown(event)">
 👤 My Account
 </div>
 
 <div class="dropdown" id="dropdown">
-
-<button onclick="window.location.href='/profile'">
-Profile
-</button>
-
-<button onclick="window.location.href='/favorites'">
-Favorites
-</button>
-
-<button onclick="window.location.href='/settings'">
-⚙️ Settings
-</button>
-
-<button onclick="window.location.href='/logout'">
-Logout
-</button>
-
+    <a href="/profile" class="menu-link">Profile</a>
+    <a href="/favorites" class="menu-link">Favorites</a>
+    <a href="/settings" class="menu-link">⚙️ Settings</a>
+    <a href="/logout" class="menu-link">Logout</a>
 </div>
 </div>
 </div>
@@ -309,6 +286,31 @@ onclick="openDetails(
 </div>
 
 <script>
+
+function toggleDropdown(event) {
+    event.stopPropagation();
+
+    const menu = document.getElementById("dropdown");
+
+    if (menu.style.display === "block") {
+        menu.style.display = "none";
+    } else {
+        menu.style.display = "block";
+    }
+}
+
+document.getElementById("dropdown").addEventListener("click", function(event){
+    event.stopPropagation();
+});
+
+document.addEventListener("click", function(e){
+    const profile = document.querySelector(".profile");
+
+    if(!profile.contains(e.target)){
+        document.getElementById("dropdown").style.display = "none";
+    }
+});
+
 
 function findNearby(){
 if(navigator.geolocation){
